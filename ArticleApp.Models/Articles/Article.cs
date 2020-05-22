@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Dul.Domain.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace ArticleApp.Models
 {
-    public class Article
+    public class Article : AuditableBase
     {
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
+
     }
 }

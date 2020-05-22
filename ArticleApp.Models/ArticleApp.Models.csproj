@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="Dul" Version="1.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0-preview.4.20251.6" />
   </ItemGroup>
 
 </Project>
