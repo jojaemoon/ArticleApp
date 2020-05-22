@@ -7,11 +7,11 @@ namespace ArticleApp.Models
 {
     public interface IArticleRepository
     {
-        Task<Article> AddArticleAsync(Article article);
+        Task<Article> AddArticleAsync(Article model);
         Task<List<Article>> GetArticlesAsync();
         Task<Article> GetArticleByIdAsync(int id);
-        Task<Article> EditArticleAsync(Article article);
-        Task DeleteArticleAsync(int i);
+        Task<Article> EditArticleAsync(Article model);
+        Task DeleteArticleAsync(int id);
 
         Task<PagingResult<Article>> GetAllAsync(int pageIndex, int pageSize);
     }
