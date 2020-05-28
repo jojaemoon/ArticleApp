@@ -1,4 +1,5 @@
 ﻿using Dul.Domain.Common;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ArticleApp.Models

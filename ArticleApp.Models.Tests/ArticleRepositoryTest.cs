@@ -16,6 +16,7 @@ namespace ArticleApp.Models.Tests
             // DbContextOptions<T> Object Creation
             var options = new DbContextOptionsBuilder<ArticleAppDbContext>()
                 .UseInMemoryDatabase(databaseName: "ArticleApp").Options;
+                //.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ArticleApp;Trusted_Connection=True;").Options; 
 
             // AddAsync() Method Test
             using (var context = new ArticleAppDbContext(options))
