@@ -1,8 +1,44 @@
 ﻿@page "/Articles/Details/{Id:int}"
 
+@inject NavigationManager NavigationManager
+@inject IArticleRepository ArticleRepository
+
 <h3>Details</h3>
+
+<div class="row" style="padding-left: 20px;">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label for="id">ID: </label>
+            @Model.Title
+        </div>
+        <div class="form-group">
+            <label for="title">Title: </label>
+            @Model.Title
+        </div>
+        <div class="form-group">
+            <label for="title">Creater: </label>
+            @Model.CreatedBy
+        </div>
+        <div class="form-group">
+            <label for="title">Day: </label>
+            @Model.Created
+        </div>
+        <div class="form-group">
+            <a href="/Articles/Edit" class="btn btn-success">Edit</a>
+            <a href="/Articles/Delete" class="btn btn-danger">Delete</a>
+            <a href="/Articles" class="btn btn-secondary">List</a>
+        </div>
+    </div>
+    </div>
 
 @code {
     [Parameter]
     public int Id { get; set; }
+
+    public Article Model { get; set; } = new Article();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model = await ArticleRepository.GetArticleByIdAsync(Id);
+    }
 }
