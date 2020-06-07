@@ -16,7 +16,7 @@
             </div>
             <div class="form-group">
                 <label for="txtContent">Content</label>
-                <InputTextArea id="txtContent" class="form-control" placeholder="Enter Content" @bind-Value="@Model.Content"></InputTextArea>
+                <InputTextArea id="txtContent" class="form-control" placeholder="Enter Content" rows="5" @bind-Value="@Model.Content"></InputTextArea>
                 <ValidationMessage For="@(()=>Model.Content)" class="form-text text-muted"></ValidationMessage>
             </div>
             <div class="form-group">
