@@ -14,7 +14,8 @@
 <h3>Manage</h3>
 
 <div>
-    <a href="/Articles/Create" class="btn btn-outline-primary">Create</a>
+    <a href="/Articles/Create" class="btn btn-outline-primary">일반페이지에서 추가</a>
+    <input type="text" value="모달에서 추가" class="btn btn-primary" data-toggle="modal" data-target="#articleEditDialog" @onclick="btnCreate_Click" />
 </div>
 
 @if (articles == null)
@@ -32,32 +33,44 @@ else
                 <th>&nbsp;</th>
                 <th>IsPinned</th>
                 <th>&nbsp;</th>
+                <th>Edit</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var article in articles)
             {
-                <tr>
-                    <td>@article.Id</td>
-                    <td>@article.Title</td>
-                    <td>@article.Created.ToShortTimeString()</td>
-                    
-                    <td>
-                        <a href="/Articles/Details/@article.Id" class="btn btn-light">Details</a>
-                        <a href="/Articles/Edit/@article.Id" class="btn btn-light">Edit</a>
-                        <a href="/Articles/Delete/@article.Id" class="btn btn-light">Delete</a>
-                    </td>
-                    <td>@(article.IsPinned ? "공지" : "")</td>
-                    <td>
-                        <input type="button" value="공지글로 올리기" @onclick="@(()=>PinnedBy(article))" />
-                    </td>
-                </tr>
+            <tr>
+                <td>@article.Id</td>
+                <td>@article.Title</td>
+                <td>@article.Created.ToShortTimeString()</td>
+
+                <td>
+                    <a href="/Articles/Details/@article.Id" class="btn btn-light">Details</a>
+                    <a href="/Articles/Edit/@article.Id" class="btn btn-light">Edit</a>
+                    <a href="/Articles/Delete/@article.Id" class="btn btn-light">Delete</a>
+                </td>
+                <td>@(article.IsPinned ? "공지" : "")</td>
+                <td>
+                    <input type="button" value="공지글로 올리기" @onclick="@(()=>PinnedBy(article))" />
+                </td>
+                <td>
+                    <input type="text" value="수정" class="btn btn-primary" data-toggle="modal" data-target="#articleEditDialog" @onclick="(() => EditBy(article))" />
+                </td>
+                <td>
+                    <input type="text" value="삭제" class="btn btn-danger" data-toggle="modal" data-target="#articleDeleteDialog" @onclick="(() => DeleteBy(article))" />
+                </td>
+            </tr>
             }
         </tbody>
     </table>
 }
 
 <ArticlePager Model="pager" PageIndexChanged="PageIndexChanged"></ArticlePager>
+<ArticleDeleteDialog OnClick="btnDelete_Click"></ArticleDeleteDialog>
+<ArticleEditForm Model="@_article" SaveOrUpdated="SaveOrUpdated">
+    <EditorFormTitle>@editFormTitle</EditorFormTitle>
+</ArticleEditForm>
 
 @if (isShow == true)
 {
@@ -84,8 +97,56 @@ else
 
 
 @code {
-    /*  공지 사항 모달 */
+    private void btnCreate_Click()
+    {
+        editFormTitle = "글쓰기";
+        _article = new Article();   // 모델을 클리어
+        }
 
+    private string editFormTitle = "";
+
+    /// <summary>
+    /// 저장 또는 수정 후 데이터 다시 읽어오기
+    /// </summary>
+    private async void SaveOrUpdated()
+    {
+        // 페이징
+        PagingResult<Article> pagingData = await ArticleRepository.GetAllAsync(pager.PageIndex, pager.PageSize);
+        pager.RecordCount = pagingData.TotalRecords;        // 총 레코드 수
+        articles = pagingData.Records.ToList();             // 페이징 처리된 레코드
+
+        StateHasChanged();      // 현재 콤포넌트 재로드  리플레쉬
+    }
+
+    /// <summary>
+    /// 삭제 -> 모달 폼 닫기 -> 선택했던 데이터 초기화 -> 전체 데이터 다시 읽어오기 -> Refresh
+    /// </summary>
+    private async void btnDelete_Click()
+    {
+        await ArticleRepository.DeleteArticleAsync(_article.Id);   //삭제
+        await JSRuntime.InvokeAsync<object>("closeModal", "articleDeleteDialog");  // _Host.cshtml
+        _article = new Article();   // 선택 항목 초기화
+
+        // 페이징
+        PagingResult<Article> pagingData = await ArticleRepository.GetAllAsync(pager.PageIndex, pager.PageSize);
+        pager.RecordCount = pagingData.TotalRecords;        // 총 레코드 수
+        articles = pagingData.Records.ToList();             // 페이징 처리된 레코드
+
+        StateHasChanged();      // 현재 콤포넌트 재로드  리플레쉬
+    }
+
+    private void EditBy(Article article)
+    {
+        editFormTitle = "수정하기";
+        _article = article;
+    }
+
+    private void DeleteBy(Article article)
+    {
+        _article = article;
+    }
+
+    /*  공지 사항 모달 */
     private Article _article = new Article();       // 선택한 항목 관리
 
     private bool isShow = false;   // ㅜㅐ샻ㄷ ㅡㅐㅇ미
@@ -142,6 +203,7 @@ else
         pager.PageIndex = pageIndex;
         pager.PageNumber = pageIndex + 1;
 
+        // 페이징
         var pagingData = await ArticleRepository.GetAllAsync(pager.PageIndex, pager.PageSize);
         pager.RecordCount = pagingData.TotalRecords;
         articles = pagingData.Records.ToList();
